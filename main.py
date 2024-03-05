@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 12 11:02:06 2020
+
+@author: OHyic
+
+"""
+#Import libraries
+import os
+import concurrent.futures
+from GoogleImageScraper import GoogleImageScraper
+from patch import webdriver_executable
+
+
+def worker_thread(search_key):
+    image_scraper = GoogleImageScraper(
+        webdriver_path, 
+        image_path, 
+        search_key, 
+        number_of_images, 
+        headless, 
+        min_resolution, 
+        max_resolution, 
+        max_missed)
+    image_urls = image_scraper.find_image_urls()
+    image_scraper.save_images(image_urls, keep_filenames)
+
+    #Release resources
+    del image_scraper
+
+if __name__ == "__main__":
+    #Define file path
+
+    download_dir = 'D:/CS4540/'
+    webdriver_path = os.path.normpath(os.path.join(os.getcwd(), 'webdriver', webdriver_executable()))
+    image_path = os.path.normpath(os.path.join(download_dir, 'photos'))
+
+    #Add new search key into array ["cat","t-shirt","apple","orange","pear","fish"]
+    search_keys = list(set(["alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut", "delaware",
+                            "florida", "georgia", "hawaii", "idaho", "illinois", "indiana", "iowa", "kansas",
+                            "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota", "mississippi",
+                            "missouri", "montana", "nebraska", "nevada", "new hamshire", "new jersey", "new mexico", "new york",
+                            "north carolina", "north dakota", "ohio", "oklahoma", "oregon", "pennsylvania", "rhode island", "south carolina",
+                            "south dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington", "west virginia", 
+                            "wisconsin", "wyoming"]))
+    search_keys_filter = list(set(["spring", "summer", "fall", "winter", "weather", "terrain"]))
+
+    #Parameters
+    number_of_images = 10               # Desired number of images
+    headless = True                     # True = No Chrome GUI
+    min_resolution = (0, 0)             # Minimum desired image resolution
+    max_resolution = (9999, 9999)       # Maximum desired image resolution
+    max_missed = 20                     # Max number of failed images before exit
+    number_of_workers = 2               # Number of "workers" used
+    keep_filenames = False              # Keep original URL image filenames
+
+    #Run each search_key in a separate thread
+    #Automatically waits for all threads to finish
+    #Removes duplicate strings from search_keys
+    with concurrent.futures.ThreadPoolExecutor(max_workers=number_of_workers) as executor:
+        executor.map(worker_thread, search_keys)
