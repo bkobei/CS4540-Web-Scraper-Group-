@@ -31,7 +31,7 @@ def worker_thread(search_key):
 if __name__ == "__main__":
     #Define file path
 
-    download_dir = 'D:/CS4540/'
+    download_dir = --Download directory here--
     webdriver_path = os.path.normpath(os.path.join(os.getcwd(), 'webdriver', webdriver_executable()))
     image_path = os.path.normpath(os.path.join(download_dir, 'photos'))
 
